@@ -23,3 +23,12 @@ ev.on('event.up', () => {
 ```
 
 Ответ:
+```ecmascript 6
+/** 
+ * В VECTOR_NAME[v], ключ v позволил понять что 
+ * индексы в VECTOR_NAME зависят от того, что возвращает функция getVector()
+ * В ev.on лежит подсказка о наименовании события.
+ **/
+ 
+const VECTOR_NAME = ['down', 'left', 'up', 'right'];
+
