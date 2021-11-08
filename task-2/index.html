@@ -79,9 +79,18 @@
     },
     methods: {
       deleteItem () {
-        this.deleted = _.remove(this.items, function (el) {
-          return el.rest === 0
-        })
+          /**
+           * Поменял _.remove (непонятно что он делает под капотом с оригинальным массивом)
+           * на неизменяющий оригинальный массив - _.filter.
+           * Также, чтобы this.deleted формировался в один проход, вставил его сюда же.
+           */
+          this.items = _.filter(this.items, (el) => {
+              if (el.rest !== 0) {
+                  return true
+              } else {
+                  this.deleted.push(el);
+              }
+          });
       }
     }
   })
