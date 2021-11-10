@@ -1,20 +1,34 @@
 <template>
   <div class="hello">
+    <div
+      v-for="(route,id) in calcRoutes" :key="id"
+    >
+      <v-container>
+        <v-row>
+          <div
+              v-for="(detailRoute) in route" :key="id + detailRoute.src + detailRoute.des"
+          >
+            {{detailRoute.src + ' '+ detailRoute.company +'-> ' + detailRoute.des}}
+          </div>
+        </v-row>
+      </v-container>
 
+    </div>
   </div>
 </template>
 
 <script>
-import paths from '../../call-paths.json';
-
 export default {
-  name: 'HelloWorld',
+  name: 'Routes',
+  props:{
+    routes: Object,
+    side: Object
+  },
   data() {
     return{
-      paths: paths,
-      testSrc: "kz",
-      testDes: "de",
-      routes: [],
+      testSrc: "ru",
+      testDes: "kz",
+      calcRoutes: [],
       localRoutes: [],
       mainRoute: null
     }
@@ -33,8 +47,9 @@ export default {
      * @param src
      */
     generate(src){
-      for(let company in this.paths.data.company){
-        this.paths.data.company[company].forEach(route=>{
+      for(let company in this.routes){
+        this.routes[company].forEach(route=>{
+          console.log('iterate');
           // При помощи этого условия зацепляемся за следующий элемент
           if(route.src===src) {
             // Здесь обновляем последний элемент в localRoutes
@@ -48,7 +63,7 @@ export default {
               //Передаем принимающую сторону, которая будет использоваться как звонящая (итерируемся)
               this.generate(route.des);
             } else {
-              this.routes.push(this.localRoutes);
+              this.calcRoutes.push(this.localRoutes);
               // Если это маршрут прямого соединения то сбрасываем временный маршрут
               // Чтобы была возможность формироваться новому маршруту
               if(route.src === this.testSrc && route.des === this.testDes) this.localRoutes=[];
@@ -58,7 +73,21 @@ export default {
       }
       // Возможность формироваться новому маршруту после очередной рекурсии
       this.localRoutes = [];
+      // this.deleteLastElement(src);
+    },
+    deleteLastElement(src){
+      if(this.localRoutes.length>1 && this.localRoutes[this.localRoutes.length-1].src === src) {
+        this.localRoutes.splice(this.localRoutes.length - 1, 1);
+      }
     }
+  },
+  watch:{
+    side: function (event) {
+      if(event.el === 'src') this.testSrc = event.val;
+      if(event.el === 'des') this.testDes = event.val;
+      this.calcRoutes=[];
+      this.generate(this.testSrc);
+    },
   }
 }
 </script>
